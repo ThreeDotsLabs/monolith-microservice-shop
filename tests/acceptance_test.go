@@ -22,12 +22,12 @@ var testCases = []struct {
 }{
 	{
 		Name:                 "monolith",
-		OrdersServiceAddress: "http://monolith:8080",
+		OrdersServiceAddress: "http://monolith:8080", // running from container, so :8080, not :8090
 		ShopServiceAddress:   "http://monolith:8080",
 	},
 	{
 		Name:                 "microservices",
-		OrdersServiceAddress: "http://orders:8080",
+		OrdersServiceAddress: "http://orders:8080", // running from container, so :8080, not :8070
 		ShopServiceAddress:   "http://shop:8080",
 	},
 }
