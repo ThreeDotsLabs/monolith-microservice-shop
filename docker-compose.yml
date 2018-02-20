@@ -1,0 +1,66 @@
+version: '3'
+services:
+  monolith:
+    build: .
+    entrypoint: ["reflex", "-s", "-r", ".go", "go", "run", "./cmd/monolith/main.go"]
+    ports:
+      - "8090:8080"
+    environment:
+      - SHOP_MONOLITH_BIND_ADDR=:8080
+    volumes:
+      - .:$GO_PROJECT_DIR
+
+  orders:
+    build: .
+    entrypoint: ["reflex", "-s", "-r", ".go", "go", "run", "./cmd/microservices/orders/main.go"]
+    ports:
+      - "8070:8080"
+    environment:
+      - SHOP_ORDERS_SERVICE_BIND_ADDR=:8080
+      - SHOP_RABBITMQ_ADDR=rabbitmq:5672
+      - SHOP_RABBITMQ_ORDERS_TO_PAY_QUEUE=orders-to-pay
+      - SHOP_SHOP_SERVICE_ADDR=http://shop:8080
+    volumes:
+      - .:$GO_PROJECT_DIR
+    depends_on:
+      - rabbitmq
+
+  payments:
+    build: .
+    entrypoint: ["reflex", "-s", "-r", ".go", "go", "run", "./cmd/microservices/payments/main.go"]
+    volumes:
+      - .:$GO_PROJECT_DIR
+    environment:
+      - SHOP_RABBITMQ_ADDR=rabbitmq:5672
+      - SHOP_RABBITMQ_ORDERS_TO_PAY_QUEUE=orders-to-pay
+      - SHOP_ORDERS_SERVICE_ADDR=http://orders:8080
+
+    depends_on:
+      - rabbitmq
+  shop:
+    build: .
+    entrypoint: ["reflex", "-s", "-r", ".go", "go", "run", "./cmd/microservices/shop/main.go"]
+    volumes:
+      - .:$GO_PROJECT_DIR
+    environment:
+      - SHOP_SHOP_SERVICE_BIND_ADDR=:8080
+    ports:
+      - "8071:8080"
+    depends_on:
+      - rabbitmq
+
+  rabbitmq:
+    image: rabbitmq:3.7-management
+    ports:
+      - "15672:15672"
+
+  tests:
+    build: .
+    entrypoint: ["sleep", "infinity"]
+    depends_on:
+      - shop
+      - payments
+      - orders
+      - monolith
+    volumes:
+      - .:$GO_PROJECT_DIR
