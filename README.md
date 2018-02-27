@@ -44,13 +44,13 @@ First of all you must run services
 
 Then you can run all tests by using in another terminal:
 
-    docker-test
+    make docker-test
 
 
 If you want to test only monolith version:
 
-    docker-test-monolith
+    make docker-test-monolith
 
 or microservices:
 
-    docker-test-microservices
+    make docker-test-microservices
