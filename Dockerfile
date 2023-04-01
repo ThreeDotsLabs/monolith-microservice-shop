@@ -1,9 +1,7 @@
-FROM golang:1.9
-
-RUN go get github.com/golang/dep/cmd/dep
+FROM golang:1.20
 
 WORKDIR /go/src/github.com/ThreeDotsLabs/monolith-microservice-shop
 COPY . .
 
-RUN dep ensure
-RUN go get github.com/cespare/reflex
+RUN go mod download
+RUN go install github.com/cespare/reflex@latest
