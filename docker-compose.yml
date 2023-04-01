@@ -8,8 +8,8 @@ services:
     environment:
       - SHOP_MONOLITH_BIND_ADDR=:8080
     volumes:
-      - ./cmd/:$GO_PROJECT_DIR/cmd/
-      - ./pkg/:$GO_PROJECT_DIR/pkg/
+      - ./cmd:$GO_PROJECT_DIR/cmd
+      - ./pkg:$GO_PROJECT_DIR/pkg
 
   orders:
     build: .
@@ -22,8 +22,8 @@ services:
       - SHOP_RABBITMQ_ORDERS_TO_PAY_QUEUE=orders-to-pay
       - SHOP_SHOP_SERVICE_ADDR=http://shop:8080
     volumes:
-      - ./cmd/:$GO_PROJECT_DIR/cmd/
-      - ./pkg/:$GO_PROJECT_DIR/pkg/
+      - ./cmd:$GO_PROJECT_DIR/cmd
+      - ./pkg:$GO_PROJECT_DIR/pkg
     depends_on:
       - rabbitmq
 
@@ -31,8 +31,8 @@ services:
     build: .
     entrypoint: ["./docker/entrypoint.sh", "./cmd/microservices/payments/main.go"]
     volumes:
-      - ./cmd/:$GO_PROJECT_DIR/cmd/
-      - ./pkg/:$GO_PROJECT_DIR/pkg/
+      - ./cmd:$GO_PROJECT_DIR/cmd
+      - ./pkg:$GO_PROJECT_DIR/pkg
     environment:
       - SHOP_RABBITMQ_ADDR=rabbitmq:5672
       - SHOP_RABBITMQ_ORDERS_TO_PAY_QUEUE=orders-to-pay
@@ -44,8 +44,8 @@ services:
     build: .
     entrypoint: ["./docker/entrypoint.sh", "./cmd/microservices/shop/main.go"]
     volumes:
-      - ./cmd/:$GO_PROJECT_DIR/cmd/
-      - ./pkg/:$GO_PROJECT_DIR/pkg/
+      - ./cmd:$GO_PROJECT_DIR/cmd
+      - ./pkg:$GO_PROJECT_DIR/pkg
     environment:
       - SHOP_SHOP_SERVICE_BIND_ADDR=:8080
     ports:
@@ -67,4 +67,4 @@ services:
       - orders
       - monolith
     volumes:
-      - ./tests/:$GO_PROJECT_DIR/tests/
+      - ./tests:$GO_PROJECT_DIR/tests
